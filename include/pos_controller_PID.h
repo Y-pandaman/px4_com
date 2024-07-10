@@ -278,7 +278,7 @@ namespace namespace_PID {
             thurst_int(2) += MPC_Z_VEL_I * error_vel(2) * delta_time;
 
             // 限制推力积分，防止推力过大
-            thurst_int(2) = std::min(std::abs(thurst_int(2)), MPC_THR_MAX) *
+            thurst_int(2) = min(fabs(thurst_int(2)), MPC_THR_MAX) *
                             sign_function(thurst_int(2));
         }
 
@@ -294,10 +294,10 @@ namespace namespace_PID {
 
         // 根据倾斜角度和额外推力确定X和Y方向的最大允许推力
         float thrust_max_XY_tilt =
-            std::abs(thrust_sp(2)) * std::tanf(tilt_max / 180.0 * M_PI);
+            fabs(thrust_sp(2)) * tanf(tilt_max / 180.0 * M_PI);
         float thrust_max_XY =
-            std::sqrtf(MPC_THR_MAX * MPC_THR_MAX - thrust_sp(2) * thrust_sp(2));
-        thrust_max_XY = std::min(thrust_max_XY_tilt, thrust_max_XY);
+            sqrtf(MPC_THR_MAX * MPC_THR_MAX - thrust_sp(2) * thrust_sp(2));
+        thrust_max_XY = min(thrust_max_XY_tilt, thrust_max_XY);
 
         // 饱和X和Y方向的推力，防止超出最大推力
         thrust_sp(0) = thrust_desired_X;
@@ -307,8 +307,8 @@ namespace namespace_PID {
         if ((thrust_desired_X * thrust_desired_X +
              thrust_desired_Y * thrust_desired_Y) >
             thrust_max_XY * thrust_max_XY) {
-            float mag    = std::sqrtf((thrust_desired_X * thrust_desired_X +
-                                    thrust_desired_Y * thrust_desired_Y));
+            float mag    = sqrtf((thrust_desired_X * thrust_desired_X +
+                               thrust_desired_Y * thrust_desired_Y));
             thrust_sp(0) = thrust_desired_X / mag * thrust_max_XY;
             thrust_sp(1) = thrust_desired_Y / mag * thrust_max_XY;
         }

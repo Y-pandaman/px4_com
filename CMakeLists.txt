@@ -203,13 +203,13 @@ add_dependencies(px4_vel_controller px4_command_gencpp)
 target_link_libraries(px4_vel_controller
   ${catkin_LIBRARIES}
 )
-add_executable(crossing_door_darknet
-  src/Application/crossing_door_darknet.cpp
-)
-add_dependencies(crossing_door_darknet px4_command_gencpp)
-target_link_libraries(crossing_door_darknet
-  ${catkin_LIBRARIES}
-)
+# add_executable(crossing_door_darknet
+#   src/Application/crossing_door_darknet.cpp
+# )
+# add_dependencies(crossing_door_darknet px4_command_gencpp)
+# target_link_libraries(crossing_door_darknet
+#   ${catkin_LIBRARIES}
+# )
 
 # add_executable(firematch
 # src/Application/firematch.cpp

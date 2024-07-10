@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
                 yaw_sp = pos_controller.Hold_yaw;
             }
             // 通过位置PID控制器计算加速度设定值
-            accel_sp = pos_controllerpid.pos_controller(
+            accel_sp = pos_controller_pid.pos_controller(
                 pos_controller.pos_drone_fcu, pos_controller.vel_drone_fcu,
                 pos_controller.Hold_position, vel_sp, Command_Now.sub_mode, dt);
             // 发送加速度设定值和保持航向给无人机

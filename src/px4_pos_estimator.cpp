@@ -14,7 +14,7 @@
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 #include <nav_msgs/Odometry.h>
-#include <nlink_parser/LinktrackNodeframe2.h>
+// #include <nlink_parser/LinktrackNodeframe2.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Range.h>
@@ -52,7 +52,7 @@ geometry_msgs::TransformStamped uwb_last;
 //---------------------------------------动捕相关------------------------------------------
 Eigen::Vector3d pos_drone_vicon;
 Eigen::Quaterniond q_vicon;
-Eigen::Vector euler_vicon;
+Eigen::Vector3d euler_vicon;
 geometry_msgs::PoseStamped vicon;
 geometry_msgs::PoseStamped vicon_last;
 
@@ -117,15 +117,15 @@ void t265_cb(const nav_msgs::Odometry::ConstPtr& msg) {
     }
 }
 
-void uwb_tagCallback(const nlink_parser::LinktrackNodeframe2& msg) {
-    // ROS_INFO("msg LinktrackTagframe0 received,systemTime: %d",
-    // msg.systemTime);
-    pos_drone_uwb[0] = msg.pos[0];
-    pos_drone_uwb[1] = msg.pos[1];
-    Eigen::Quaterniond q_uwb_enu(msg.q[0], msg.q[1], msg.q[2], msg.q[3]);
-    q_uwb     = q_uwb_enu;
-    Euler_uwb = quaternion_to_euler(q_uwb);
-}
+// void uwb_tagCallback(const nlink_parser::LinktrackNodeframe2& msg) {
+//     // ROS_INFO("msg LinktrackTagframe0 received,systemTime: %d",
+//     // msg.systemTime);
+//     pos_drone_uwb[0] = msg.pos[0];
+//     pos_drone_uwb[1] = msg.pos[1];
+//     Eigen::Quaterniond q_uwb_enu(msg.q[0], msg.q[1], msg.q[2], msg.q[3]);
+//     q_uwb     = q_uwb_enu;
+//     Euler_uwb = quaternion_to_euler(q_uwb);
+// }
 
 void vicon_cb(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     pos_drone_vicon[0] = msg->pose.position.x;
@@ -226,8 +226,8 @@ int main(int argc, char** argv) {
     ros::Subscriber t265_sub =
         nh.subscribe<nav_msgs::Odometry>("/camera/odom/sample", 1000, t265_cb);
     // 【订阅】uwb估计位置
-    ros::Subscriber sub =
-        nh.subscribe("/nlink_linktrack_nodeframe2", 1000, uwb_tagCallback);
+    // ros::Subscriber sub =
+    //     nh.subscribe("/nlink_linktrack_nodeframe2", 1000, uwb_tagCallback);
     /// 【订阅】动捕估计位置
     ros::Subscriber vicon_sub = nh.subscribe<geometry_msgs::PoseStamped>(
         "/vrpn_client_node/Tracker0/pose", 100, vicon_cb);
@@ -305,18 +305,18 @@ void pose_pub_timer_cb(const ros::TimerEvent& TE) {
         vision.header.stamp       = TE.current_real;
     }
     // source -from uwb
-    if (pose_source == 2) {
-        pos_drone_uwb[2]       = pos_drone_fcu[2];
-        vision.pose.position.x = pos_drone_uwb[0];
-        vision.pose.position.y = pos_drone_uwb[1];
-        vision.pose.position.z = pos_drone_uwb[2];
+    // if (pose_source == 2) {
+    //     pos_drone_uwb[2]       = pos_drone_fcu[2];
+    //     vision.pose.position.x = pos_drone_uwb[0];
+    //     vision.pose.position.y = pos_drone_uwb[1];
+    //     vision.pose.position.z = pos_drone_uwb[2];
 
-        vision.pose.orientation.x = q_uwb.x();
-        vision.pose.orientation.y = q_uwb.y();
-        vision.pose.orientation.z = q_uwb.z();
-        vision.pose.orientation.w = q_uwb.w();
-        vision.header.stamp       = TE.current_real;
-    }
+    //     vision.pose.orientation.x = q_uwb.x();
+    //     vision.pose.orientation.y = q_uwb.y();
+    //     vision.pose.orientation.z = q_uwb.z();
+    //     vision.pose.orientation.w = q_uwb.w();
+    //     vision.header.stamp       = TE.current_real;
+    // }
 
     // source from 动捕
     if (pose_source == 3) {
@@ -413,7 +413,7 @@ void printf_info() {
         cout << "Pos_vicon [X Y Z] : " << pos_drone_vicon[0] << " [ m ] "
              << pos_drone_vicon[1] << " [ m ] " << pos_drone_vicon[2]
              << " [ m ] " << endl;
-        cout << "Euler_vicon[Yaw] : " << Euler_vicon[2] * 180 / M_PI
+        cout << "Euler_vicon[Yaw] : " << euler_vicon[2] * 180 / M_PI
              << " [deg]  " << endl;
     }
 
